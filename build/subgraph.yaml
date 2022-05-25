@@ -1,6 +1,6 @@
 specVersion: 0.0.2
 schema:
-  file: ./schema.graphql
+  file: schema.graphql
 dataSources:
   - kind: ethereum
     name: HourlyEvents
@@ -8,17 +8,16 @@ dataSources:
     source:
       address: "0x37bC7498f4FF12C19678ee8fE19d713b87F6a9e6"
       abi: AccessControlledOffchainAggregator
-      startBlock: 12382429
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.5
       language: wasm/assemblyscript
       entities:
-        - LastRun
+        - Cron
       abis:
         - name: AccessControlledOffchainAggregator
-          file: ./abis/AccessControlledOffchainAggregator.json
+          file: HourlyEvents/abis/AccessControlledOffchainAggregator.json
       eventHandlers:
         - event: NewRound(indexed uint256,indexed address,uint256)
           handler: handleCronTrigger
-      file: ./src/alarm_clock_triggers.ts
+      file: HourlyEvents/HourlyEvents.wasm

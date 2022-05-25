@@ -11,27 +11,30 @@ import {
   BigDecimal
 } from "@graphprotocol/graph-ts";
 
-export class Cron extends Entity {
+export class LastRun extends Entity {
   constructor(id: string) {
     super();
     this.set("id", Value.fromString(id));
+
+    this.set("timestamp", Value.fromBigInt(BigInt.zero()));
+    this.set("block", Value.fromBigInt(BigInt.zero()));
   }
 
   save(): void {
     let id = this.get("id");
-    assert(id != null, "Cannot save Cron entity without an ID");
+    assert(id != null, "Cannot save LastRun entity without an ID");
     if (id) {
       assert(
         id.kind == ValueKind.STRING,
-        "Cannot save Cron entity with non-string ID. " +
+        "Cannot save LastRun entity with non-string ID. " +
           'Considering using .toHex() to convert the "id" to a string.'
       );
-      store.set("Cron", id.toString(), this);
+      store.set("LastRun", id.toString(), this);
     }
   }
 
-  static load(id: string): Cron | null {
-    return changetype<Cron | null>(store.get("Cron", id));
+  static load(id: string): LastRun | null {
+    return changetype<LastRun | null>(store.get("LastRun", id));
   }
 
   get id(): string {
@@ -43,101 +46,21 @@ export class Cron extends Entity {
     this.set("id", Value.fromString(value));
   }
 
-  get lastRun(): i32 {
-    let value = this.get("lastRun");
-    return value!.toI32();
+  get timestamp(): BigInt {
+    let value = this.get("timestamp");
+    return value!.toBigInt();
   }
 
-  set lastRun(value: i32) {
-    this.set("lastRun", Value.fromI32(value));
+  set timestamp(value: BigInt) {
+    this.set("timestamp", Value.fromBigInt(value));
   }
 
-  get minute(): i32 {
-    let value = this.get("minute");
-    return value!.toI32();
+  get block(): BigInt {
+    let value = this.get("block");
+    return value!.toBigInt();
   }
 
-  set minute(value: i32) {
-    this.set("minute", Value.fromI32(value));
-  }
-
-  get hour(): i32 {
-    let value = this.get("hour");
-    return value!.toI32();
-  }
-
-  set hour(value: i32) {
-    this.set("hour", Value.fromI32(value));
-  }
-
-  get monthDay(): i32 {
-    let value = this.get("monthDay");
-    return value!.toI32();
-  }
-
-  set monthDay(value: i32) {
-    this.set("monthDay", Value.fromI32(value));
-  }
-
-  get month(): i32 {
-    let value = this.get("month");
-    return value!.toI32();
-  }
-
-  set month(value: i32) {
-    this.set("month", Value.fromI32(value));
-  }
-
-  get weekDay(): i32 {
-    let value = this.get("weekDay");
-    return value!.toI32();
-  }
-
-  set weekDay(value: i32) {
-    this.set("weekDay", Value.fromI32(value));
-  }
-}
-
-export class CronList extends Entity {
-  constructor(id: string) {
-    super();
-    this.set("id", Value.fromString(id));
-
-    this.set("cronIds", Value.fromStringArray(new Array(0)));
-  }
-
-  save(): void {
-    let id = this.get("id");
-    assert(id != null, "Cannot save CronList entity without an ID");
-    if (id) {
-      assert(
-        id.kind == ValueKind.STRING,
-        "Cannot save CronList entity with non-string ID. " +
-          'Considering using .toHex() to convert the "id" to a string.'
-      );
-      store.set("CronList", id.toString(), this);
-    }
-  }
-
-  static load(id: string): CronList | null {
-    return changetype<CronList | null>(store.get("CronList", id));
-  }
-
-  get id(): string {
-    let value = this.get("id");
-    return value!.toString();
-  }
-
-  set id(value: string) {
-    this.set("id", Value.fromString(value));
-  }
-
-  get cronIds(): Array<string> {
-    let value = this.get("cronIds");
-    return value!.toStringArray();
-  }
-
-  set cronIds(value: Array<string>) {
-    this.set("cronIds", Value.fromStringArray(value));
+  set block(value: BigInt) {
+    this.set("block", Value.fromBigInt(value));
   }
 }
