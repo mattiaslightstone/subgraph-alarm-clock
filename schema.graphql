@@ -1,0 +1,14 @@
+type Cron @entity {
+  id: ID!
+  lastRun: Int!
+  minute: Int!
+  hour: Int!
+  monthDay: Int!
+  month: Int!
+  weekDay: Int!
+}
+
+type CronList @entity {
+  id: ID!
+  cronIds: [String!]!
+}
