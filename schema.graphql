@@ -18,3 +18,9 @@ type LastRun @entity {
   timestamp: BigInt!
   block: BigInt!
 }
+
+type Log @entity {
+  id: ID!
+  timestamp: BigInt!
+  type: String!
+}

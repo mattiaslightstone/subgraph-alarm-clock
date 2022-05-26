@@ -8,7 +8,8 @@
     "build": "graph build",
     "create-local": "graph create --node http://localhost:8020/ subgraph-alarm-clock",
     "remove-local": "graph remove --node http://localhost:8020/ subgraph-alarm-clock",
-    "deploy-local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 subgraph-alarm-clock"
+    "deploy-local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 subgraph-alarm-clock",
+    "pre-install": "./scripts/preinstall.sh"
   },
   "author": "Mattias Lightstone - mattias@component.fi",
   "license": "ISC",

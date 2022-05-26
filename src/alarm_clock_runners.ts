@@ -1,11 +1,45 @@
-export function runMinutely(): void {}
+import { ethereum } from "@graphprotocol/graph-ts";
+import { Log } from "../generated/schema";
 
-export function runHourly(): void {}
+export function runMinutely(event: ethereum.Event): void {}
 
-export function runDaily(): void {}
+export function runHourly(event: ethereum.Event): void {
+  const type = "hour";
 
-export function runWeekly(): void {}
+  const log = new Log(type + event.block.timestamp.toString());
+  log.timestamp = event.block.timestamp;
+  log.type = type;
+  log.save();
+}
 
-export function runMonthly(): void {}
+export function runDaily(event: ethereum.Event): void {
+  const type = "day";
+  const log = new Log(type + event.block.timestamp.toString());
+  log.timestamp = event.block.timestamp;
+  log.type = type;
+  log.save();
+}
 
-export function runYearly(): void {}
+export function runWeekly(event: ethereum.Event): void {
+  const type = "week";
+  const log = new Log(type + event.block.timestamp.toString());
+  log.timestamp = event.block.timestamp;
+  log.type = type;
+  log.save();
+}
+
+export function runMonthly(event: ethereum.Event): void {
+  const type = "month";
+  const log = new Log(type + event.block.timestamp.toString());
+  log.timestamp = event.block.timestamp;
+  log.type = type;
+  log.save();
+}
+
+export function runYearly(event: ethereum.Event): void {
+  const type = "year";
+  const log = new Log(type + event.block.timestamp.toString());
+  log.timestamp = event.block.timestamp;
+  log.type = type;
+  log.save();
+}

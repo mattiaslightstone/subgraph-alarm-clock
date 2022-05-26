@@ -64,3 +64,57 @@ export class LastRun extends Entity {
     this.set("block", Value.fromBigInt(value));
   }
 }
+
+export class Log extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+
+    this.set("timestamp", Value.fromBigInt(BigInt.zero()));
+    this.set("type", Value.fromString(""));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(id != null, "Cannot save Log entity without an ID");
+    if (id) {
+      assert(
+        id.kind == ValueKind.STRING,
+        "Cannot save Log entity with non-string ID. " +
+          'Considering using .toHex() to convert the "id" to a string.'
+      );
+      store.set("Log", id.toString(), this);
+    }
+  }
+
+  static load(id: string): Log | null {
+    return changetype<Log | null>(store.get("Log", id));
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    return value!.toString();
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get timestamp(): BigInt {
+    let value = this.get("timestamp");
+    return value!.toBigInt();
+  }
+
+  set timestamp(value: BigInt) {
+    this.set("timestamp", Value.fromBigInt(value));
+  }
+
+  get type(): string {
+    let value = this.get("type");
+    return value!.toString();
+  }
+
+  set type(value: string) {
+    this.set("type", Value.fromString(value));
+  }
+}
