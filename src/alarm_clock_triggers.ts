@@ -1,6 +1,6 @@
 import { NewRound } from "../generated/HourlyEvents/AccessControlledOffchainAggregator";
 import { LastRun } from "../generated/schema";
-import { BigInt, log } from "@graphprotocol/graph-ts";
+import { BigInt } from "@graphprotocol/graph-ts";
 import {
   runDaily,
   runHourly,
@@ -21,7 +21,6 @@ export function handleCronTrigger(event: NewRound): void {
   let currentBlock = event.block.number;
 
   const date = new Date((currentTimestamp.toI64() * 1000) as i64);
-  log.info("date {}", [date.toISOString()]);
 
   // check by minute
   const minutelyResult = testMinute(date);
@@ -31,7 +30,6 @@ export function handleCronTrigger(event: NewRound): void {
   }
   // check hourly
   const hourlyResult = testHour(date);
-  log.info("after hour result", []);
   if (hourlyResult) {
     runHourly(event);
     updateLastRun(HOUR_ID, currentTimestamp, currentBlock);
@@ -83,11 +81,8 @@ function testHour(currentDate: Date): boolean {
   // runs at x:00 every hour
   const lastRun = ensureLastRun(HOUR_ID);
   // get the last hour time
-  log.warning("before milliseconds", []);
   currentDate.setUTCMilliseconds(0 as i32);
-  log.warning("before seconds", []);
   currentDate.setUTCSeconds(0 as i32);
-  log.warning("before ninutes", []);
   currentDate.setUTCMinutes(0 as i32);
   return currentDate.getTime() / 1000 >= lastRun.timestamp.toI64();
 }
@@ -147,16 +142,11 @@ function testYear(currentDate: Date): boolean {
 
 function ensureLastRun(id: string): LastRun {
   let lastRun = LastRun.load(id);
-  log.info("fetching last run", []);
   if (!lastRun) {
     lastRun = new LastRun(id);
-    log.info("create last run", []);
     lastRun.timestamp = new BigInt(0);
-    log.info("timestamp last run", []);
     lastRun.block = new BigInt(0);
-    log.info("block last run", []);
     lastRun.save();
   }
-  log.info("fetched last run", []);
   return lastRun;
 }
