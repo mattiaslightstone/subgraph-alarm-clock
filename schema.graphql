@@ -1,14 +1,26 @@
-type Cron @entity {
+# type Cron @entity {
+#   id: ID!
+#   lastRun: Int!
+#   minute: Int!
+#   hour: Int!
+#   monthDay: Int!
+#   month: Int!
+#   weekDay: Int!
+# }
+
+# type CronList @entity {
+#   id: ID!
+#   cronIds: [String!]!
+# }
+
+type LastRun @entity {
   id: ID!
-  lastRun: Int!
-  minute: Int!
-  hour: Int!
-  monthDay: Int!
-  month: Int!
-  weekDay: Int!
+  timestamp: BigInt!
+  block: BigInt!
 }
 
-type CronList @entity {
+type Log @entity {
   id: ID!
-  cronIds: [String!]!
+  timestamp: BigInt!
+  type: String!
 }
