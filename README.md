@@ -1,9 +1,1 @@
-# Cron jobs for the graph. At the moment we are only going to be getting granularity up to 1 hour.
-
-1. Choose the specific contract you would like to base your time triggers on
-- How do we handle multiple chains?
-- How do we handle multiple different contracts?
-- Option: default to the eth/usd chainlink aggregator address: 0x37bC7498f4FF12C19678ee8fE19d713b87F6a9e6, block: 12382429 (May 7, 2021)
-2. choose the starting block for tracking
-3. It should generate the subgraph.yaml
-4. It should copy the subgraph.yaml that is generated to the subgraph.yaml in the current directory
+Demo to show the use of "subgraph-alarm-clock". Running periodic tasks is difficult to do with subgraphs. The subgraph uses a chosen contract event as a triggers. It then checks if this is the first event within this minute, hour, day, week (starting on Sunday), month, and year. You can then assign custom handlers for the actions to be performed each time period. This is a simple example that will create a new entity for each time based trigger. It uses the eth-usd chainlink oracle new round event as a trigger (runs approximately every 30 minutes, and has been around for a year). Thus the minute timeframe is limited to only running once per event ~2 times per hour. If you want to handle minute events, or start at an earlier block then a new contract and event must be chosen.
