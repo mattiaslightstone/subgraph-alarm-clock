@@ -6,7 +6,7 @@
   "scripts": {
     "pre-codegen": "node scripts/copyFiles.js && node scripts/alarmClock/alarmClock.js",
     "codegen": "yarn run pre-codegen && graph codegen && yarn run post-codegen",
-    "post-codegen": "node scripts/getClassNames.js",
+    "post-codegen": "node scripts/addEnsures.js",
     "build": "graph build",
     "create-local": "graph create --node http://localhost:8020/ subgraph-alarm-clock",
     "remove-local": "graph remove --node http://localhost:8020/ subgraph-alarm-clock",
