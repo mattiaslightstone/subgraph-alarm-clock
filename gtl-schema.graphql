@@ -2,4 +2,11 @@ type Log @entity {
   id: ID!
   timestamp: BigInt!
   type: String!
+  tests: [Test!]! @derivedFrom(field: "log")
+}
+
+type Test @entity {
+  id: ID!
+  type: String!
+  log: Log!
 }

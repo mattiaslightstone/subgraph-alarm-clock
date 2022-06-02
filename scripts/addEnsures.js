@@ -1,3 +1,4 @@
+const { kStringMaxLength } = require("node:buffer");
 const fs = require("node:fs/promises");
 
 const test = async () => {
@@ -5,35 +6,37 @@ const test = async () => {
         if (err) throw err;
     });
 
-    const classNames = await getClasses(processClassName);
-    for (i in classNames){
-      processClassName(classNames[i])
+    const classes = await getClasses(processClass);
+    for (i in classes){
+      processClass(classes[i])
     }
 }
 
 const getClasses = async (callback) => {
-    const file = await fs.readFile('./generated/schema.ts', "utf-8");
-    const regex = RegExp(/class ([\w\d\S]*) /g)
-    let className;
-    const classNames = []
+    const file = await fs.readFile('./schema.graphql', "utf-8");
+    const regex = RegExp(/type ([\w\d]*) @entity \{([\w\W]*?)\}/g)
+    let cls;
+    const classes = []
     do {
-        className = regex.exec(file)
-        if(className !== null){
-            classNames.push(className[1])
+        cls = regex.exec(file)
+        if(cls !== null){
+            classes.push(
+              {
+                class: cls[1],
+                paramList: cls[2]
+              }
+            )
         }
-    } while (className !== null)
-    return classNames
+    } while (cls !== null)
+    return classes
 }
 
 const getParams = async (className) => {
-  const file = await fs.readFile('./generated/schema.ts', "utf-8");
-  const classRegex = RegExp(String.raw`(?<=${className} extends Entity) \{([\s\S])*?(?=export class [\w\d]* extends Entity|$)`, 'g')
-  const functions = classRegex.exec(file);
-  const paramRegex = RegExp(/get ([\w\d]*)\(\)\: ([\w\d]*) \{/g);
+  const paramRegex = RegExp(/\b([\w\d]*?)\: ([\!\[\]\w\d]*)\b/g);
   const params = []
   let currParam;
   do {
-    currParam = paramRegex.exec(functions[0]);
+    currParam = paramRegex.exec(className);
     if(currParam !== null){
       params.push({
         name: currParam[1],
@@ -44,26 +47,35 @@ const getParams = async (className) => {
   return params;
 }
 
-const processClassName = async (className) => {
-  const params = await getParams(className);
+const processClass = async (cls) => {
+  const params = await getParams(cls.paramList);
+  const className = cls.class
   let paramString = '';
   let importString = '';
   let paramInputString = 'id: string';
   for (i in params){ 
     let param = params[i]
-    if (param.name === 'id'){
+    const typeObj = getType(param.type);
+    const array = typeObj.array;
+    const type = typeObj.type;
+    const paramName = param.name;
+    if (paramName === 'id'){
       continue;
     }
-    if (!["string", "BigInt", "number", "Bytes"].includes(param.type)){
-      paramInputString = paramInputString.concat(`${param.name}Id: string, `)
-
-      paramString = paramString.concat(`\n entity.${param.name} = ensure${param.type}(${param.name}Id)`)
-
-      importString = importString.concat(`\nimport {ensure${className}} from './${className}'`);
+    if (array){
+        paramString = paramString.concat(`\n entity.${paramName} = []`)
     } else {
-      paramInputString = paramInputString.concat(`, ${param.name}: ${param.type}`)
+      if (!["string", "BigInt", "number", "Bytes", "boolean", "BigDecimal"].includes(type)){
+        paramInputString = paramInputString.concat(`, ${paramName}Id: string`)
 
-      paramString = paramString.concat(`\n entity.${param.name} = ${param.name}`)
+        paramString = paramString.concat(`\n entity.${paramName} = ensure${type}(${paramName}Id).id`)
+
+        importString = importString.concat(`\nimport {ensure${type}} from './${type}'`);
+      } else {
+        paramInputString = paramInputString.concat(`, ${paramName}: ${type}`)
+
+        paramString = paramString.concat(`\n entity.${paramName} = ${paramName}`)
+      }
     }
   }
 
@@ -89,6 +101,59 @@ export function add${className}(${paramInputString}): ${className}{
     `
     fs.writeFile(`./src/entities/${className}.ts`, schemaContent)
 
+}
+
+const getType = (rawType) => {
+  if (rawType.includes("[")){
+    const type = rawType.replace("[","");
+    return {
+      type: getType(type),
+      array: true
+    }
+  }
+
+  switch(rawType) {
+    case "ID":
+      return {
+        type: "string",
+        array: false
+      }
+    case "String":
+      return {
+        type: "string",
+        array: false
+      }
+    case "BigInt":
+      return {
+        type: "BigInt",
+        array: false
+      }
+    case "BigDecimal":
+      return {
+        type: "BigDecimal",
+        array: false
+      }
+    case "Bytes":
+      return {
+        type: "Bytes",
+        array: false
+      }
+    case "Int":
+      return {
+        type: "number",
+        array: false
+      }
+    case "Boolean":
+      return {
+        type: "number",
+        array: false
+      }
+    default:
+      return {
+        type: rawType,
+        array: false
+      }
+  }
 }
 
 test();

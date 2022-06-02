@@ -16,6 +16,7 @@ export function addLog(id: string, timestamp: BigInt, type: string): Log{
   
  entity.timestamp = timestamp
  entity.type = type
+ entity.tests = []
 
   return entity
 }
